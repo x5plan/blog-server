@@ -19,6 +19,15 @@ module.exports = {
         "import/no-cycle": "off",
         "no-extend-native": "error",
         "no-unused-vars": "off",
+        "@typescript-eslint/explicit-member-accessibility": [
+            "error",
+            {
+                accessibility: "explicit",
+                overrides: {
+                    constructors: "no-public",
+                },
+            },
+        ],
         "simple-import-sort/exports": "error",
         "simple-import-sort/imports": "error",
         "@typescript-eslint/consistent-type-imports": "error",
