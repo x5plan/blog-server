@@ -2,6 +2,16 @@ server:
   hostname: 127.0.0.1
   port: 5050
 
+database:
+  host: 127.0.0.1
+  port: 3306
+  type: mariadb
+  username: root
+  password: "123456"
+  database: x5plan_blog
+
+redis: redis://127.0.0.1:6379
+
 security:
   sessionSecret: # DO NOT LEAK THIS
 
