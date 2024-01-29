@@ -1,0 +1,18 @@
+// Attention!
+// Do NOT modify the existing code.
+export const enum CE_ErrorCode {
+    Unknown = -1,
+
+    // Native HTTP Code
+    AuthRequired = 401,
+    PermissionDenied = 403,
+    NotFound = 404,
+    ServerError = 500,
+
+    // Global Error Code (1000 ~ 1199)
+    ValidationError = 1000,
+
+    // Auth Module Error Code (1200 ~ 1299)
+
+    // User Module Error Code (1300 ~ 1399)
+}
