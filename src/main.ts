@@ -2,8 +2,9 @@ import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { json as expressJSON } from "express";
 
-import { AppModule } from "./app.module";
-import { ConfigService } from "./config/config.service";
+import { AppModule } from "@/app.module";
+import { ValidationErrorException } from "@/common/exception/validation-error.exception";
+import { ConfigService } from "@/config/config.service";
 
 async function bootstrapAsync() {
     const app = await NestFactory.create(AppModule);
@@ -15,6 +16,7 @@ async function bootstrapAsync() {
             transform: true,
             whitelist: true,
             forbidNonWhitelisted: true,
+            exceptionFactory: (errors) => new ValidationErrorException(errors),
         }),
     );
     app.use(expressJSON({ limit: "50mb" }));
