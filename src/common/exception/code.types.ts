@@ -7,10 +7,12 @@ export const enum CE_ErrorCode {
     AuthRequired = 401,
     PermissionDenied = 403,
     NotFound = 404,
+    TooManyRequests = 429,
     ServerError = 500,
 
     // Global Error Code (1000 ~ 1199)
     ValidationError = 1000,
+    RecaptchaError = 1001,
 
     // Auth Module Error Code (1200 ~ 1299)
     Auth_NoSuchUser = 1200,
