@@ -10,17 +10,18 @@ import { AuthEntity } from "./auth.entity";
 import { AuthMiddleware } from "./auth.middleware";
 import { AuthService } from "./auth.service";
 import { AuthSessionService } from "./auth-session.service";
-import { RegisterCodeEntity } from "./registration-code.entity";
+import { AuthVerificationCodeService } from "./auth-verification-code.service";
+import { RegistrationCodeEntity } from "./registration-code.entity";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([AuthEntity]),
-        TypeOrmModule.forFeature([RegisterCodeEntity]),
+        TypeOrmModule.forFeature([RegistrationCodeEntity]),
         forwardRef(() => RedisModule),
         forwardRef(() => UserModule),
     ],
-    providers: [AuthService, AuthSessionService],
-    exports: [AuthService, AuthSessionService],
+    providers: [AuthService, AuthSessionService, AuthVerificationCodeService],
+    exports: [AuthService, AuthSessionService, AuthVerificationCodeService],
     controllers: [AuthController],
 })
 export class AuthModule implements NestModule {
