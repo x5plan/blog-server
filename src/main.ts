@@ -8,6 +8,8 @@ import { ValidationErrorException } from "@/common/exception/validation-error.ex
 import { ConfigService } from "@/config/config.service";
 import { ErrorFilter } from "@/error.filter";
 
+import { RecaptchaFilter } from "./recaptcha/recaptcha.filter";
+
 async function bootstrapAsync() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const packageInfo = require("../package.json");
@@ -17,7 +19,7 @@ async function bootstrapAsync() {
     const app = await NestFactory.create(AppModule);
 
     app.setGlobalPrefix("api");
-    app.useGlobalFilters(app.get(ErrorFilter));
+    app.useGlobalFilters(app.get(ErrorFilter), app.get(RecaptchaFilter));
     app.useGlobalPipes(
         new ValidationPipe({
             always: true,
@@ -29,6 +31,17 @@ async function bootstrapAsync() {
     );
     app.use(expressJSON({ limit: "50mb" }));
 
+    const configService = app.get(ConfigService);
+
+    if (configService.config.security.crossOrigin.enabled) {
+        app.enableCors({
+            origin: configService.config.security.crossOrigin.whitelist,
+            optionsSuccessStatus: 200,
+            maxAge: 7200,
+        });
+    }
+
+    Logger.log(`Setting up Swagger API document builder`, "Bootstrap");
     const document = SwaggerModule.createDocument(
         app,
         new DocumentBuilder()
@@ -39,8 +52,6 @@ async function bootstrapAsync() {
             .build(),
     );
     SwaggerModule.setup("/docs", app, document);
-
-    const configService = app.get(ConfigService);
 
     await app.listen(configService.config.server.port, configService.config.server.hostname);
 
