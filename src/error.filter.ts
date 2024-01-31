@@ -39,7 +39,7 @@ export class ErrorFilter implements ExceptionFilter {
                 );
             } else {
                 appError = new AppHttpException(
-                    CE_ErrorCode.Unknown,
+                    CE_ErrorCode.ServerError,
                     error.message,
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     isProduction() ? undefined : error?.stack,
