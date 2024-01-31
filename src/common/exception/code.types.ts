@@ -15,6 +15,11 @@ export const enum CE_ErrorCode {
     // Auth Module Error Code (1200 ~ 1299)
     Auth_NoSuchUser = 1200,
     Auth_WrongPassword = 1201,
+    Auth_DuplicateUsername = 1202,
+    Auth_DuplicateEmail = 1203,
+    Auth_InvalidEmailVerificationCode = 1204,
+    Auth_InvalidateRegistrationCode = 1205,
+    Auth_EmailVerificationCodeRateLimited = 1206,
 
     // User Module Error Code (1300 ~ 1399)
 }
