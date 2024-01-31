@@ -15,3 +15,8 @@ redis: redis://127.0.0.1:6379
 security:
   sessionSecret: # DO NOT LEAK THIS
 
+initialization:
+  adminUsername: root
+  adminPassword: x5plan-admin
+  adminEmail: root@x5plan.club
+
