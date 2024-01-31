@@ -22,8 +22,8 @@ interface IRedisWithSessionManager extends Redis {
 }
 
 interface ISessionInfoInternal {
-    loginIp: string;
-    userAgent: string;
+    loginIp: string | null;
+    userAgent: string | null;
     loginTime: number;
 }
 

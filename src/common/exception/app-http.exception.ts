@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 
+import { isProduction } from "../utils/env";
 import type { CE_ErrorCode } from "./code.types";
 
 export class AppHttpException extends HttpException {
@@ -9,6 +10,6 @@ export class AppHttpException extends HttpException {
         status: HttpStatus = HttpStatus.BAD_REQUEST,
         extra?: unknown,
     ) {
-        super({ code, msg, extra }, status);
+        super({ code, msg, extra: isProduction() ? undefined : extra }, status);
     }
 }

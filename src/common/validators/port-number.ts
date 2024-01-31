@@ -7,8 +7,12 @@ import { If } from "./if";
 
 // class-validator's IsPort accepts strings only,
 // but I prefer writing port numbers as number
+export function isPortNumber(value: unknown): value is number {
+    return isInt(value) && min(value, 1) && max(value, 65535);
+}
+
 export function IsPortNumber(validationOptions?: ValidationOptions) {
-    return If((value) => isInt(value) && min(value, 1) && max(value, 65535), {
+    return If(isPortNumber, {
         message: ({ property }) => `${property} must be a port number`,
         ...validationOptions,
     });

@@ -20,16 +20,27 @@ export class ErrorFilter implements ExceptionFilter {
                 appError = error;
             } else if (error instanceof HttpException) {
                 const body = error.getResponse();
+
+                let msg: string;
+
+                if (typeof body === "string") {
+                    msg = body;
+                } else if (typeof body === "object" && "message" in body) {
+                    msg = body.message as string;
+                } else {
+                    msg = "Unknown error";
+                }
+
                 appError = new AppHttpException(
                     CE_ErrorCode.Unknown,
-                    typeof body === "string" && !isProduction() ? body : undefined,
+                    msg,
                     error.getStatus(),
                     typeof body === "object" && !isProduction() ? body : undefined,
                 );
             } else {
                 appError = new AppHttpException(
                     CE_ErrorCode.Unknown,
-                    String(error),
+                    error.message,
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     isProduction() ? undefined : error?.stack,
                 );

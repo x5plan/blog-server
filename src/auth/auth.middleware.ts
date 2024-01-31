@@ -25,9 +25,8 @@ export class AuthMiddleware implements NestMiddleware {
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     public async use(req: IRequestWithSession, res: Response, next: () => void): Promise<void> {
-        const authHeader = req.headers.authorization;
-        const sessionKey = authHeader && authHeader.split(" ")[1];
-        if (sessionKey) {
+        const [bearer, sessionKey] = req.headers.authorization?.split(" ") || [];
+        if (bearer?.toLowerCase() === "bearer" && sessionKey) {
             const [sessionId, user] = await this.authSessionService.accessSessionAsync(sessionKey);
             if (sessionId && user) {
                 req.session = {
