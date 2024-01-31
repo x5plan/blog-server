@@ -8,9 +8,9 @@ export class AuthEntity {
     @JoinColumn({ name: "userId" })
     public userPromise: Promise<UserEntity>;
 
-    @PrimaryColumn()
+    @PrimaryColumn({ nullable: false })
     public userId: number;
 
-    @Column({ type: "char", length: 60 })
+    @Column({ type: "char", length: 60, nullable: false })
     public password: string;
 }

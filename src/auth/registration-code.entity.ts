@@ -3,15 +3,15 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGenerate
 import { UserEntity } from "@/user/user.entity";
 
 @Entity("registration_code")
-export class RegisterCodeEntity {
+export class RegistrationCodeEntity {
     @PrimaryGeneratedColumn()
     public readonly id: number;
 
     @Index({ unique: true })
-    @Column({ type: "uuid" })
+    @Column({ type: "uuid", nullable: false })
     public code: string;
 
-    @Column({ type: "datetime" })
+    @Column({ type: "datetime", nullable: false })
     public expireDate: Date;
 
     @ManyToOne(() => UserEntity)
@@ -19,14 +19,14 @@ export class RegisterCodeEntity {
     public creatorPromise: Promise<UserEntity>;
 
     @Index({ unique: false })
-    @Column()
+    @Column({ nullable: false })
     public creatorId: number;
 
     @OneToOne(() => UserEntity)
-    @JoinColumn({ name: "assigneedUserId" })
+    @JoinColumn({ name: "assaignedUserId" })
     public assaignedUserPromise: Promise<UserEntity>;
 
     @Index({ unique: true })
     @Column({ nullable: true })
-    public assaignedUserId: number;
+    public assaignedUserId: number | null;
 }
