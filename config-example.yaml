@@ -14,6 +14,19 @@ redis: redis://127.0.0.1:6379
 
 security:
   sessionSecret: # DO NOT LEAK THIS
+  rateLimit:
+    enabled: true
+    maxRequests: 200
+    durationSeconds: 10
+  crossOrigin:
+    enabled: false
+    whitelist: # whitelist is an array and each item must be an url with protocol
+      - https://blog.x5plan.club
+  recaptcha:
+    enabled: false
+    secretKey:
+    siteKey:
+    useRecaptchaNet: false
 
 initialization:
   adminUsername: root

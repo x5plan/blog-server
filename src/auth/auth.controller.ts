@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Recaptcha } from "@nestlab/google-recaptcha";
 
 import { CurrentUser } from "@/common/decorators/user.decorator";
 import { AuthRequiredException } from "@/common/exception/auth-required.exception";
@@ -50,7 +51,9 @@ export class AuthController {
 
     @ApiOperation({
         summary: "A HTTP POST request to login.",
+        description: "Recaptcha required.",
     })
+    @Recaptcha()
     @Post("login")
     public async postLoginAsync(
         @Req() req: IRequestWithSession,
@@ -94,7 +97,9 @@ export class AuthController {
 
     @ApiOperation({
         summary: "A HTTP POST request to register a new user.",
+        description: "Recaptcha required.",
     })
+    @Recaptcha()
     @Post("register")
     public async postRegisterAsync(
         @Req() req: IRequestWithSession,
@@ -124,9 +129,10 @@ export class AuthController {
 
     @ApiOperation({
         summary: "A HTTP POST request to create a new registration code.",
-        description: "Auth required.",
+        description: "Auth required. Recaptcha required.",
     })
     @ApiBearerAuth()
+    @Recaptcha()
     @Post("createRegistrationCode")
     public async postCreateRegistrationCodeAsync(@CurrentUser() currentUser: UserEntity): Promise<RegistrationCodeDto> {
         if (!currentUser) {

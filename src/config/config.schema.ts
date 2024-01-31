@@ -1,10 +1,13 @@
 import { Type } from "class-transformer";
 import {
+    IsBoolean,
     IsEmail,
     IsIn,
+    IsInt,
     IsIP,
     IsNotEmpty,
     IsNotEmptyObject,
+    IsOptional,
     IsString,
     IsUrl,
     Length,
@@ -45,10 +48,71 @@ class DatabaseConfig {
     public readonly type: "mysql" | "mariadb";
 }
 
+class RateLimitSecurityConfig {
+    @IsBoolean()
+    public readonly enabled: boolean;
+
+    @IsInt()
+    @IsOptional()
+    public readonly maxRequests: number;
+
+    @IsInt()
+    @IsOptional()
+    public readonly durationSeconds: number;
+}
+
+class CrossOriginSecurityConfig {
+    @IsBoolean()
+    public readonly enabled: boolean;
+
+    @IsUrl(
+        {
+            protocols: ["http", "https"],
+            require_protocol: true,
+            require_host: true,
+        },
+        {
+            each: true,
+        },
+    )
+    public readonly whitelist: string[];
+}
+
+class RecaptchaSecurityConfig {
+    @IsBoolean()
+    public readonly enabled: boolean;
+
+    @IsString()
+    @IsOptional()
+    public readonly secretKey: string;
+
+    @IsString()
+    @IsOptional()
+    public readonly siteKey: string;
+
+    @IsBoolean()
+    public readonly useRecaptchaNet: boolean;
+}
+
 class SecurityConfig {
     @IsString()
     @IsNotEmpty()
     public readonly sessionSecret: string;
+
+    @Type(() => RateLimitSecurityConfig)
+    @ValidateNested()
+    @IsNotEmptyObject()
+    public readonly rateLimit: RateLimitSecurityConfig;
+
+    @Type(() => CrossOriginSecurityConfig)
+    @ValidateNested()
+    @IsNotEmptyObject()
+    public readonly crossOrigin: CrossOriginSecurityConfig;
+
+    @Type(() => RecaptchaSecurityConfig)
+    @ValidateNested()
+    @IsNotEmptyObject()
+    public readonly recaptcha: RecaptchaSecurityConfig;
 }
 
 class InitializationConfig {
