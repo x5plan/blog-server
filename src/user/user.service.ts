@@ -20,11 +20,19 @@ export class UserService {
         return await this.userRepository.findOne({ where: { username } });
     }
 
+    public async checkUsernameExistsAsync(username: string) {
+        return !!(await this.userRepository.count({ where: { username } }));
+    }
+
+    public async checkEmailExistsAsync(email: string) {
+        return !!(await this.userRepository.count({ where: { email } }));
+    }
+
     public convertUserBaseDetail(user: UserEntity, currentUser?: UserEntity): UserBaseDetailDto {
         return {
             id: user.id,
             username: user.username,
-            email: user.publicEmail || currentUser?.isAdmin ? user.email : null,
+            email: user.publicEmail || currentUser?.isAdmin || currentUser?.id === user.id ? user.email : null,
             nickname: user.nickname,
             isAdmin: user.isAdmin,
         };
