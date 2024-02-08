@@ -2,6 +2,11 @@ name: Docker Dev Image
 
 on:
   workflow_dispatch:
+    inputs:
+      tag_label:
+        description: Docker tag label
+        required: true
+        default: dev-
 
 jobs:
   build:
@@ -38,4 +43,4 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/x5plan-blog-server:dev-$(date +%Y%m%d)
+        tags: ${{ secrets.DOCKER_USERNAME }}/x5plan-blog-server:${{ github.event.inputs.tag_label }}
