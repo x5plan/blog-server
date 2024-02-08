@@ -42,5 +42,6 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
+        context: .
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/x5plan-blog-server:${{ github.event.inputs.tag_label }}
