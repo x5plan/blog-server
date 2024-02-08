@@ -70,6 +70,7 @@ class CrossOriginSecurityConfig {
             protocols: ["http", "https"],
             require_protocol: true,
             require_host: true,
+            require_tld: false,
         },
         {
             each: true,
@@ -142,6 +143,7 @@ export class AppConfig {
         protocols: ["redis", "rediss", "redis-socket", "redis-sentinel"],
         require_protocol: true,
         require_host: true,
+        require_tld: false,
     })
     public readonly redis: string;
 
