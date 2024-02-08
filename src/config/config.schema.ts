@@ -14,6 +14,7 @@ import {
     ValidateNested,
 } from "class-validator";
 
+import { IsHostname } from "@/common/validators/hostname";
 import { IsPortNumber } from "@/common/validators/port-number";
 import { IsUsername } from "@/common/validators/username";
 
@@ -26,7 +27,9 @@ class ServerConfig {
 }
 
 class DatabaseConfig {
-    @IsIP()
+    @IsHostname({
+        require_tld: false,
+    })
     public readonly host: string;
 
     @IsPortNumber()
