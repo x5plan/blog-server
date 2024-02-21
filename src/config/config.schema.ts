@@ -132,6 +132,10 @@ class InitializationConfig {
 }
 
 export class AppConfig {
+    @IsString()
+    @IsNotEmpty()
+    public readonly appName: string;
+
     @Type(() => ServerConfig)
     @ValidateNested()
     @IsNotEmptyObject()

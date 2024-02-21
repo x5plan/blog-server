@@ -1,3 +1,5 @@
+appName: X5Plan Blog
+
 server:
   hostname: 127.0.0.1
   port: 5050
@@ -32,4 +34,3 @@ initialization:
   adminUsername: root
   adminPassword: x5plan-admin
   adminEmail: root@x5plan.club
-
