@@ -4,6 +4,7 @@ import { Recaptcha } from "@nestlab/google-recaptcha";
 
 import { CurrentUser } from "@/common/decorators/user.decorator";
 import { AuthRequiredException } from "@/common/exception/auth-required.exception";
+import { ConfigService } from "@/config/config.service";
 import { UserEntity } from "@/user/user.entity";
 import { UserService } from "@/user/user.service";
 
@@ -26,6 +27,7 @@ export class AuthController {
         private readonly authService: AuthService,
         private readonly authSessionService: AuthSessionService,
         private readonly userService: UserService,
+        private readonly configService: ConfigService,
     ) {}
 
     @ApiOperation({
@@ -41,10 +43,12 @@ export class AuthController {
             const [, user] = await this.authSessionService.accessSessionAsync(token);
             return {
                 userBaseDetail: user && this.userService.convertUserBaseDetail(user),
+                config: this.configService.getClientConfig(),
             };
         } else {
             return {
                 userBaseDetail: null,
+                config: this.configService.getClientConfig(),
             };
         }
     }

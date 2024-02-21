@@ -45,7 +45,7 @@ async function bootstrapAsync() {
     const document = SwaggerModule.createDocument(
         app,
         new DocumentBuilder()
-            .setTitle("X5Plan Blog")
+            .setTitle(packageInfo.name)
             .setDescription(packageInfo.description)
             .setVersion(packageInfo.version)
             .addBearerAuth()
@@ -56,7 +56,7 @@ async function bootstrapAsync() {
     await app.listen(configService.config.server.port, configService.config.server.hostname);
 
     Logger.log(
-        `X5Plan Blog is listening on ${configService.config.server.hostname}:${configService.config.server.port}`,
+        `${configService.config.appName} is listening on ${configService.config.server.hostname}:${configService.config.server.port}`,
         "Bootstrap",
     );
 }

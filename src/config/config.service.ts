@@ -4,6 +4,7 @@ import { validateSync } from "class-validator";
 import { readFileSync } from "fs";
 import { load as loadYaml } from "js-yaml";
 
+import type { AppClientConfigDto } from "./client-config.dto";
 import { AppConfig } from "./config.schema";
 
 @Injectable()
@@ -28,5 +29,14 @@ export class ConfigService {
         }
 
         return config;
+    }
+
+    public getClientConfig(): AppClientConfigDto {
+        return {
+            appName: this.config.appName,
+            recaptchaEnabled: this.config.security.recaptcha.enabled,
+            recaptchaSiteKey: this.config.security.recaptcha.siteKey,
+            useRecaptchaNet: this.config.security.recaptcha.useRecaptchaNet,
+        };
     }
 }
