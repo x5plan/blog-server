@@ -14,7 +14,7 @@ async function bootstrapAsync() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const packageInfo = require("../package.json");
 
-    Logger.log(`Starting X5Plan Blog version ${packageInfo.version}`, "Bootstrap");
+    Logger.log(`Starting ${packageInfo.name} version ${packageInfo.version}`, "Bootstrap");
 
     const app = await NestFactory.create(AppModule);
 
@@ -56,7 +56,7 @@ async function bootstrapAsync() {
     await app.listen(configService.config.server.port, configService.config.server.hostname);
 
     Logger.log(
-        `${configService.config.appName} is listening on ${configService.config.server.hostname}:${configService.config.server.port}`,
+        `${packageInfo.name} is listening on ${configService.config.server.hostname}:${configService.config.server.port}`,
         "Bootstrap",
     );
 }

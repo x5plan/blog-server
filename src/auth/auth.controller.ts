@@ -1,14 +1,21 @@
-import { Body, Controller, Get, Post, Query, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Recaptcha } from "@nestlab/google-recaptcha";
 
 import { CurrentUser } from "@/common/decorators/user.decorator";
+import type { CommonResultResponseDto } from "@/common/dtos/common-result.dto";
 import { AuthRequiredException } from "@/common/exception/auth-required.exception";
+import { PermissionDeniedException } from "@/common/exception/permission-denied.exception";
 import { ConfigService } from "@/config/config.service";
 import { UserEntity } from "@/user/user.entity";
 import { UserService } from "@/user/user.service";
 
-import { NoSuchUserException, WrongPasswordException } from "./auth.exception";
+import {
+    InvalidRegistrationCodeException,
+    NoSuchUserException,
+    RegistrationCodeAlreadyUsedException,
+    WrongPasswordException,
+} from "./auth.exception";
 import { IRequestWithSession } from "./auth.middleware";
 import { AuthService } from "./auth.service";
 import { AuthSessionService } from "./auth-session.service";
@@ -19,6 +26,10 @@ import { LoginPostRequestBodyDto } from "./dto/login.dto";
 import type { RegisterPostResponseDto } from "./dto/register.dto";
 import { RegisterPostRequestBodyDto } from "./dto/register.dto";
 import type { RegistrationCodeDto } from "./dto/registration-code.dto";
+import {
+    DeleteRegistrationCodeRequestParamsDto,
+    GetRegistrationCodeListRequestQueryDto,
+} from "./dto/registration-code.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -96,8 +107,16 @@ export class AuthController {
         summary: "A HTTP POST request to logout.",
         description: "Auth required.",
     })
+    @ApiBearerAuth()
     @Post("logout")
-    public async postLogoutAsync() {}
+    public async postLogoutAsync(@Req() req: IRequestWithSession): Promise<CommonResultResponseDto> {
+        if (req.session?.sessionKey) {
+            await this.authSessionService.endSessionAsync(req.session.sessionKey);
+            return { success: true };
+        }
+
+        return { success: false };
+    }
 
     @ApiOperation({
         summary: "A HTTP POST request to register a new user.",
@@ -137,7 +156,7 @@ export class AuthController {
     })
     @ApiBearerAuth()
     @Recaptcha()
-    @Post("createRegistrationCode")
+    @Post("registrationCode")
     public async postCreateRegistrationCodeAsync(@CurrentUser() currentUser: UserEntity): Promise<RegistrationCodeDto> {
         if (!currentUser) {
             throw new AuthRequiredException();
@@ -146,5 +165,68 @@ export class AuthController {
         const registrationCode = await this.authService.createNewRegistrationCodeAsync(currentUser);
 
         return await this.authService.convertRegistrationCodeDetailAsync(registrationCode, currentUser);
+    }
+
+    @ApiOperation({
+        summary: "A HTTP GET request to get registration code list.",
+        description: "Auth required. Recaptcha required.",
+    })
+    @ApiBearerAuth()
+    @Delete("registrationCode/:code")
+    public async deleteRegistrationCodeAsync(
+        @CurrentUser() currentUser: UserEntity,
+        @Param() param: DeleteRegistrationCodeRequestParamsDto,
+    ): Promise<CommonResultResponseDto> {
+        if (!currentUser) {
+            throw new AuthRequiredException();
+        }
+
+        const registrationCodeEntity = await this.authService.findRegistrationCodeByCodeAsync(param.code);
+
+        if (!registrationCodeEntity) {
+            throw new InvalidRegistrationCodeException();
+        }
+
+        if (registrationCodeEntity.creatorId !== currentUser.id && !currentUser.isAdmin) {
+            throw new AuthRequiredException();
+        }
+
+        if (registrationCodeEntity.assaignedUserId) {
+            throw new RegistrationCodeAlreadyUsedException();
+        }
+
+        await this.authService.deleteRegistrationCodeAsync(registrationCodeEntity);
+
+        return { success: true };
+    }
+
+    @ApiOperation({
+        summary: "A HTTP GET request to get registration code list.",
+        description: "Auth required. Recaptcha required.",
+    })
+    @ApiBearerAuth()
+    @Recaptcha()
+    @Get("registrationCodeList")
+    public async getRegistrationCodeListAsync(
+        @CurrentUser() currentUser: UserEntity,
+        @Query() query: GetRegistrationCodeListRequestQueryDto,
+    ): Promise<RegistrationCodeDto[]> {
+        if (!currentUser) {
+            throw new AuthRequiredException();
+        }
+
+        if (query.creatorId && query.creatorId !== currentUser.id && !currentUser.isAdmin) {
+            throw new PermissionDeniedException();
+        }
+
+        const registrationCodeEntityList = await this.authService.findRegistrationCodeListByCreatorIdAsync(
+            query.creatorId,
+        );
+
+        return await Promise.all(
+            registrationCodeEntityList.map((registrationCodeEntity) =>
+                this.authService.convertRegistrationCodeDetailAsync(registrationCodeEntity, currentUser),
+            ),
+        );
     }
 }
