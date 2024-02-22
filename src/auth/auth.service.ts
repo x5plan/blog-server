@@ -108,7 +108,7 @@ export class AuthService implements OnApplicationBootstrap {
                     registrationCodeEntity = await manager.findOne(RegistrationCodeEntity, {
                         where: {
                             code: registrationCode,
-                            assaignedUserId: IsNull(),
+                            assignedUserId: IsNull(),
                             expireDate: MoreThanOrEqual(new Date()),
                         },
                     });
@@ -117,7 +117,7 @@ export class AuthService implements OnApplicationBootstrap {
                         throw new InvalidRegistrationCodeException();
                     }
 
-                    registrationCodeEntity.assaignedUserId = user.id;
+                    registrationCodeEntity.assignedUserId = user.id;
                     await manager.save(registrationCodeEntity);
 
                     await this.authVerificationCodeService.revokeAsync(
@@ -176,7 +176,7 @@ export class AuthService implements OnApplicationBootstrap {
         currentUser?: UserEntity,
     ): Promise<RegistrationCodeDto> {
         const creatorUserEntity = await registrationCodeEntity.creatorPromise;
-        const assignedUserEntity = registrationCodeEntity.assaignedUserId
+        const assignedUserEntity = registrationCodeEntity.assignedUserId
             ? await registrationCodeEntity.assignedUserPromise
             : null;
 
