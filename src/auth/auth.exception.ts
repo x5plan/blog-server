@@ -33,9 +33,9 @@ export class InvalidEmailVerificationCodeException extends AppHttpException {
     }
 }
 
-export class InvalidateRegistrationCodeException extends AppHttpException {
+export class InvalidRegistrationCodeException extends AppHttpException {
     constructor() {
-        super(CE_ErrorCode.Auth_InvalidateRegistrationCode, "Invalidate registration code.", HttpStatus.FORBIDDEN);
+        super(CE_ErrorCode.Auth_InvalidRegistrationCode, "Invalid registration code.", HttpStatus.FORBIDDEN);
     }
 }
 
@@ -46,5 +46,11 @@ export class EmailVerificationCodeRateLimitedException extends AppHttpException 
             "Email verification code rate limited.",
             HttpStatus.FORBIDDEN,
         );
+    }
+}
+
+export class RegistrationCodeAlreadyUsedException extends AppHttpException {
+    constructor() {
+        super(CE_ErrorCode.Auth_RegistrationCodeAlreadyUsed, "Registration code already used.", HttpStatus.FORBIDDEN);
     }
 }

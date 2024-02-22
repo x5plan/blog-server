@@ -13,7 +13,7 @@ import { AuthEntity } from "./auth.entity";
 import {
     DuplicateEmailException,
     DuplicateUsernameException,
-    InvalidateRegistrationCodeException,
+    InvalidRegistrationCodeException,
 } from "./auth.exception";
 import { AuthVerificationCodeService, CE_VerificationCodeType } from "./auth-verification-code.service";
 import type { RegistrationCodeDto } from "./dto/registration-code.dto";
@@ -89,7 +89,7 @@ export class AuthService implements OnApplicationBootstrap {
                 verificationCode,
             ))
         ) {
-            throw new InvalidateRegistrationCodeException();
+            throw new InvalidRegistrationCodeException();
         }
 
         try {
@@ -114,7 +114,7 @@ export class AuthService implements OnApplicationBootstrap {
                     });
 
                     if (!registrationCodeEntity) {
-                        throw new InvalidateRegistrationCodeException();
+                        throw new InvalidRegistrationCodeException();
                     }
 
                     registrationCodeEntity.assaignedUserId = user.id;
@@ -130,12 +130,12 @@ export class AuthService implements OnApplicationBootstrap {
 
             return user as unknown as UserEntity;
         } catch (e) {
-            if (e instanceof InvalidateRegistrationCodeException) {
+            if (e instanceof InvalidRegistrationCodeException) {
                 throw e;
             }
 
             if (!skipCodeCheck && !registrationCodeEntity) {
-                throw new InvalidateRegistrationCodeException();
+                throw new InvalidRegistrationCodeException();
             }
 
             if (await this.userService.checkUsernameExistsAsync(username)) {
@@ -159,13 +159,25 @@ export class AuthService implements OnApplicationBootstrap {
         return await this.registrationCodeRepository.save(registrationCodeEntity);
     }
 
+    public async deleteRegistrationCodeAsync(registrationCodeEntity: RegistrationCodeEntity): Promise<void> {
+        await this.registrationCodeRepository.remove(registrationCodeEntity);
+    }
+
+    public async findRegistrationCodeByCodeAsync(code: string): Promise<RegistrationCodeEntity | null> {
+        return await this.registrationCodeRepository.findOne({ where: { code } });
+    }
+
+    public async findRegistrationCodeListByCreatorIdAsync(creatorId?: number): Promise<RegistrationCodeEntity[]> {
+        return await this.registrationCodeRepository.find({ where: { creatorId } });
+    }
+
     public async convertRegistrationCodeDetailAsync(
         registrationCodeEntity: RegistrationCodeEntity,
         currentUser?: UserEntity,
     ): Promise<RegistrationCodeDto> {
         const creatorUserEntity = await registrationCodeEntity.creatorPromise;
         const assignedUserEntity = registrationCodeEntity.assaignedUserId
-            ? await registrationCodeEntity.assaignedUserPromise
+            ? await registrationCodeEntity.assignedUserPromise
             : null;
 
         return {

@@ -24,7 +24,7 @@ export class RegistrationCodeEntity {
 
     @OneToOne(() => UserEntity)
     @JoinColumn({ name: "assaignedUserId" })
-    public assaignedUserPromise: Promise<UserEntity>;
+    public assignedUserPromise: Promise<UserEntity>;
 
     @Index({ unique: true })
     @Column({ nullable: true })
