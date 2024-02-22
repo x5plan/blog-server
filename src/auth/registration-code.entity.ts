@@ -23,10 +23,10 @@ export class RegistrationCodeEntity {
     public creatorId: number;
 
     @OneToOne(() => UserEntity)
-    @JoinColumn({ name: "assaignedUserId" })
+    @JoinColumn({ name: "assignedUserId" })
     public assignedUserPromise: Promise<UserEntity>;
 
     @Index({ unique: true })
     @Column({ nullable: true })
-    public assaignedUserId: number | null;
+    public assignedUserId: number | null;
 }

@@ -191,7 +191,7 @@ export class AuthController {
             throw new AuthRequiredException();
         }
 
-        if (registrationCodeEntity.assaignedUserId) {
+        if (registrationCodeEntity.assignedUserId) {
             throw new RegistrationCodeAlreadyUsedException();
         }
 
