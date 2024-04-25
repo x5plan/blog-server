@@ -7,10 +7,12 @@ import type { CommonResultResponseDto } from "@/common/dtos/common-result.dto";
 import { AuthRequiredException } from "@/common/exception/auth-required.exception";
 import { PermissionDeniedException } from "@/common/exception/permission-denied.exception";
 import { ConfigService } from "@/config/config.service";
+import { CE_MailTemplate, MailService } from "@/mail/mail.service";
 import { UserEntity } from "@/user/user.entity";
 import { UserService } from "@/user/user.service";
 
 import {
+    DuplicateEmailException,
     InvalidRegistrationCodeException,
     NoSuchUserException,
     RegistrationCodeAlreadyUsedException,
@@ -19,6 +21,7 @@ import {
 import { IRequestWithSession } from "./auth.middleware";
 import { AuthService } from "./auth.service";
 import { AuthSessionService } from "./auth-session.service";
+import { AuthVerificationCodeService, CE_VerificationCodeType } from "./auth-verification-code.service";
 import type { AccessTokenGetResponseDto } from "./dto/access-token.dto";
 import { AccessTokenGetRequestQueryDto } from "./dto/access-token.dto";
 import type { LoginPostResponseDto } from "./dto/login.dto";
@@ -30,6 +33,7 @@ import {
     DeleteRegistrationCodeRequestParamsDto,
     GetRegistrationCodeListRequestQueryDto,
 } from "./dto/registration-code.dto";
+import { PostSendEmailVerificationCodeRequestBodyDto } from "./dto/send-email-verification-code.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -39,6 +43,8 @@ export class AuthController {
         private readonly authSessionService: AuthSessionService,
         private readonly userService: UserService,
         private readonly configService: ConfigService,
+        private readonly mailService: MailService,
+        private readonly authVerificationCodeService: AuthVerificationCodeService,
     ) {}
 
     @ApiOperation({
@@ -148,6 +154,26 @@ export class AuthController {
             token: sessionKey,
             userBaseDetail: this.userService.convertUserBaseDetail(user),
         };
+    }
+
+    @Post("sendEmailVerificationCodeForRegistration")
+    @ApiOperation({
+        summary: "A HTTP POST request to send an email verification code to register.",
+        description: "Recaptcha required.",
+    })
+    @ApiBearerAuth()
+    @Recaptcha()
+    public async sendEmailVerificationCodeForRegistrationAsync(
+        @Body() body: PostSendEmailVerificationCodeRequestBodyDto,
+    ): Promise<CommonResultResponseDto> {
+        if (await this.userService.checkEmailExistsAsync(body.email)) {
+            throw new DuplicateEmailException();
+        }
+
+        const code = await this.authVerificationCodeService.generateAsync(CE_VerificationCodeType.Register, body.email);
+        await this.mailService.sendMailAsync(CE_MailTemplate.RegisterVerificationCode, body.lang, { code }, body.email);
+
+        return { success: true };
     }
 
     @ApiOperation({
