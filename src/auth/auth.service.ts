@@ -13,6 +13,7 @@ import { AuthEntity } from "./auth.entity";
 import {
     DuplicateEmailException,
     DuplicateUsernameException,
+    InvalidEmailVerificationCodeException,
     InvalidRegistrationCodeException,
 } from "./auth.exception";
 import { AuthVerificationCodeService, CE_VerificationCodeType } from "./auth-verification-code.service";
@@ -89,7 +90,7 @@ export class AuthService implements OnApplicationBootstrap {
                 verificationCode,
             ))
         ) {
-            throw new InvalidRegistrationCodeException();
+            throw new InvalidEmailVerificationCodeException();
         }
 
         try {
