@@ -51,6 +51,20 @@ class DatabaseConfig {
     public readonly type: "mysql" | "mariadb";
 }
 
+class MailConfig {
+    @IsEmail()
+    @IsOptional()
+    public readonly address: string;
+
+    @IsUrl({
+        protocols: ["smtp", "smtps"],
+        require_protocol: true,
+        require_host: true,
+        require_tld: false,
+    })
+    public readonly transport: string;
+}
+
 class RateLimitSecurityConfig {
     @IsBoolean()
     public readonly enabled: boolean;
@@ -145,6 +159,11 @@ export class AppConfig {
     @ValidateNested()
     @IsNotEmptyObject()
     public readonly database: DatabaseConfig;
+
+    @Type(() => MailConfig)
+    @ValidateNested()
+    @IsNotEmptyObject()
+    public readonly mail: MailConfig;
 
     @IsUrl({
         protocols: ["redis", "rediss", "redis-socket", "redis-sentinel"],

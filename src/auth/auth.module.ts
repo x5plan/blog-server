@@ -2,6 +2,7 @@ import type { MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { forwardRef, Module, RequestMethod } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { MailModule } from "@/mail/mail.module";
 import { RedisModule } from "@/redis/redis.module";
 import { UserModule } from "@/user/user.module";
 
@@ -18,6 +19,7 @@ import { RegistrationCodeEntity } from "./registration-code.entity";
         TypeOrmModule.forFeature([AuthEntity]),
         TypeOrmModule.forFeature([RegistrationCodeEntity]),
         forwardRef(() => RedisModule),
+        forwardRef(() => MailModule),
         forwardRef(() => UserModule),
     ],
     providers: [AuthService, AuthSessionService, AuthVerificationCodeService],
