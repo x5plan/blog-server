@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import { join } from "path";
 
 import { MailSendErrorException } from "@/common/exception/mail-send-error.exception";
-import { type CE_Language, getLanguage } from "@/common/locales";
+import type { CE_Language } from "@/common/locales";
 import { ConfigService } from "@/config/config.service";
 
 export const enum CE_MailTemplate {
@@ -23,13 +23,13 @@ export class MailService {
 
     private async generateEmailAsync(
         template: CE_MailTemplate,
-        lang: string,
+        lang: CE_Language,
         data: Record<string, string>,
     ): Promise<{
         subject: string;
         html: string;
     }> {
-        const templateFile = join(__dirname, "templates", `${template}.${getLanguage(lang)}.ejs`);
+        const templateFile = join(__dirname, "templates", `${template}.${lang}.ejs`);
         const renderResult = await renderFile(templateFile, {
             ...data,
             appName: this.configService.config.appName,
