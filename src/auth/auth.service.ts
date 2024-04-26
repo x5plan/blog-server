@@ -183,7 +183,12 @@ export class AuthService implements OnApplicationBootstrap {
     }
 
     public async findRegistrationCodeListByCreatorIdAsync(creatorId: number): Promise<RegistrationCodeEntity[]> {
-        return await this.registrationCodeRepository.find({ where: { creatorId } });
+        return await this.registrationCodeRepository.find({
+            where: { creatorId },
+            order: {
+                expireDate: "DESC",
+            },
+        });
     }
 
     public async convertRegistrationCodeDetailAsync(
