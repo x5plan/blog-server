@@ -54,3 +54,13 @@ export class RegistrationCodeAlreadyUsedException extends AppHttpException {
         super(CE_ErrorCode.Auth_RegistrationCodeAlreadyUsed, "Registration code already used.", HttpStatus.FORBIDDEN);
     }
 }
+
+export class RegistrationCodeLimitExceededException extends AppHttpException {
+    constructor() {
+        super(
+            CE_ErrorCode.Auth_RegistrationCodeLimitExceeded,
+            "Registration code limit exceeded.",
+            HttpStatus.FORBIDDEN,
+        );
+    }
+}

@@ -15,12 +15,14 @@ import {
     DuplicateUsernameException,
     InvalidEmailVerificationCodeException,
     InvalidRegistrationCodeException,
+    RegistrationCodeLimitExceededException,
 } from "./auth.exception";
 import { AuthVerificationCodeService, CE_VerificationCodeType } from "./auth-verification-code.service";
 import type { RegistrationCodeDto } from "./dto/registration-code.dto";
 import { RegistrationCodeEntity } from "./registration-code.entity";
 
 const REGISTRATION_CODE_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 30; // 30 days
+const REGISTRATION_CODE_LIMIT = 5;
 
 @Injectable()
 export class AuthService implements OnApplicationBootstrap {
@@ -152,6 +154,18 @@ export class AuthService implements OnApplicationBootstrap {
     }
 
     public async createNewRegistrationCodeAsync(creator: UserEntity): Promise<RegistrationCodeEntity> {
+        if (
+            !creator.isAdmin &&
+            (await this.registrationCodeRepository.count({
+                where: {
+                    creatorId: creator.id,
+                    expireDate: MoreThanOrEqual(new Date()),
+                },
+            })) >= REGISTRATION_CODE_LIMIT
+        ) {
+            throw new RegistrationCodeLimitExceededException();
+        }
+
         const registrationCodeEntity = new RegistrationCodeEntity();
         registrationCodeEntity.creatorId = creator.id;
         registrationCodeEntity.code = uuidv4();
