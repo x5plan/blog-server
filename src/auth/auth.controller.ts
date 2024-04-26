@@ -214,7 +214,7 @@ export class AuthController {
         }
 
         if (registrationCodeEntity.creatorId !== currentUser.id && !currentUser.isAdmin) {
-            throw new AuthRequiredException();
+            throw new PermissionDeniedException();
         }
 
         if (registrationCodeEntity.assignedUserId) {
@@ -246,7 +246,7 @@ export class AuthController {
         }
 
         const registrationCodeEntityList = await this.authService.findRegistrationCodeListByCreatorIdAsync(
-            query.creatorId,
+            query.creatorId || currentUser.id,
         );
 
         return await Promise.all(
