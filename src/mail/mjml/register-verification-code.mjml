@@ -1,0 +1,51 @@
+<mjml>
+  <mj-head>
+    <mj-style>
+      .code {
+        color: #0f6cbd;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .dark-logo {
+        display: none;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .divider p {
+          border-color: #479ef5 !important;
+        }
+
+        .code {
+          color: #479ef5;
+        }
+
+        .light-logo {
+          display: none;
+        }
+
+        .dark-logo {
+          display: block;
+        }
+      }
+    </mj-style>
+  </mj-head>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image src="cid:logo.light.png" alt="X5Plan" width="64px" css-class="light-logo" />
+        <mj-image src="cid:logo.dark.png" alt="X5Plan" width="64px" css-class="dark-logo" />
+        <mj-divider border-color="#0f6cbd" css-class="divider" />
+        <mj-text color="#242424" font-size="14px" line-height="24px">
+          <p>Your sign-up verification code for
+            <%= appName %> is <span class="code">
+              <%= code %></span>. It will expire in 15 minutes.</p>
+        </mj-text>
+        <mj-text color="#242424" font-size="14px" line-height="24px">
+          <p>If you are not signing up on
+            <%= appName %>, please ignore this email.</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

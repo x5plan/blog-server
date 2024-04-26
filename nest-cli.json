@@ -7,7 +7,7 @@
   },
   "compilerOptions": {
     "deleteOutDir": true,
-    "assets": ["**/*.ejs", "**/*.lua"],
+    "assets": ["**/*.ejs", "**/*.lua", "**/*.png"],
     "plugins": ["@nestjs/swagger"]
   }
 }

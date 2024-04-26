@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { renderFile } from "ejs";
 import nodemailer from "nodemailer";
+import type { Attachment } from "nodemailer/lib/mailer";
 import { join } from "path";
 
 import { MailSendErrorException } from "@/common/exception/mail-send-error.exception";
@@ -13,12 +14,35 @@ export const enum CE_MailTemplate {
     ChangeEmailVerificationCode = "change-email-verification-code",
 }
 
+const mailLogoNames = ["logo.light.png", "logo.dark.png"];
+
 @Injectable()
 export class MailService {
     private readonly transporter: nodemailer.Transporter;
 
     constructor(private readonly configService: ConfigService) {
         this.transporter = nodemailer.createTransport(this.configService.config.mail.transport);
+    }
+
+    private checkTemplateHasLogo(template: CE_MailTemplate): boolean {
+        switch (template) {
+            case CE_MailTemplate.RegisterVerificationCode:
+            case CE_MailTemplate.ResetPasswordVerificationCode:
+            case CE_MailTemplate.ChangeEmailVerificationCode:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private getLogoAttachments(): Attachment[] {
+        return mailLogoNames.map((name): Attachment => {
+            return {
+                filename: name,
+                cid: name,
+                path: join(__dirname, "logo", name),
+            };
+        });
     }
 
     private async generateEmailAsync(
@@ -62,6 +86,7 @@ export class MailService {
                 to,
                 subject,
                 html,
+                attachments: this.checkTemplateHasLogo(template) ? this.getLogoAttachments() : undefined,
             });
         } catch (e) {
             throw new MailSendErrorException(String(e));
