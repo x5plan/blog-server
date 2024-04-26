@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { renderFile } from "ejs";
 import nodemailer from "nodemailer";
+import type { Attachment } from "nodemailer/lib/mailer";
 import { join } from "path";
 
 import { MailSendErrorException } from "@/common/exception/mail-send-error.exception";
-import { type CE_Language, getLanguage } from "@/common/locales";
+import type { CE_Language } from "@/common/locales";
 import { ConfigService } from "@/config/config.service";
 
 export const enum CE_MailTemplate {
@@ -12,6 +13,8 @@ export const enum CE_MailTemplate {
     ResetPasswordVerificationCode = "reset-password-verification-code",
     ChangeEmailVerificationCode = "change-email-verification-code",
 }
+
+const mailLogoNames = ["logo.light.png", "logo.dark.png"];
 
 @Injectable()
 export class MailService {
@@ -21,15 +24,36 @@ export class MailService {
         this.transporter = nodemailer.createTransport(this.configService.config.mail.transport);
     }
 
+    private checkTemplateHasLogo(template: CE_MailTemplate): boolean {
+        switch (template) {
+            case CE_MailTemplate.RegisterVerificationCode:
+            case CE_MailTemplate.ResetPasswordVerificationCode:
+            case CE_MailTemplate.ChangeEmailVerificationCode:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private getLogoAttachments(): Attachment[] {
+        return mailLogoNames.map((name): Attachment => {
+            return {
+                filename: name,
+                cid: name,
+                path: join(__dirname, "logo", name),
+            };
+        });
+    }
+
     private async generateEmailAsync(
         template: CE_MailTemplate,
-        lang: string,
+        lang: CE_Language,
         data: Record<string, string>,
     ): Promise<{
         subject: string;
         html: string;
     }> {
-        const templateFile = join(__dirname, "templates", `${template}.${getLanguage(lang)}.ejs`);
+        const templateFile = join(__dirname, "templates", `${template}.${lang}.ejs`);
         const renderResult = await renderFile(templateFile, {
             ...data,
             appName: this.configService.config.appName,
@@ -62,6 +86,7 @@ export class MailService {
                 to,
                 subject,
                 html,
+                attachments: this.checkTemplateHasLogo(template) ? this.getLogoAttachments() : undefined,
             });
         } catch (e) {
             throw new MailSendErrorException(String(e));
