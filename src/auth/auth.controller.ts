@@ -214,7 +214,7 @@ export class AuthController {
         }
 
         if (registrationCodeEntity.creatorId !== currentUser.id && !currentUser.isAdmin) {
-            throw new AuthRequiredException();
+            throw new PermissionDeniedException();
         }
 
         if (registrationCodeEntity.assignedUserId) {
