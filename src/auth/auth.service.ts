@@ -168,7 +168,7 @@ export class AuthService implements OnApplicationBootstrap {
         return await this.registrationCodeRepository.findOne({ where: { code } });
     }
 
-    public async findRegistrationCodeListByCreatorIdAsync(creatorId?: number): Promise<RegistrationCodeEntity[]> {
+    public async findRegistrationCodeListByCreatorIdAsync(creatorId: number): Promise<RegistrationCodeEntity[]> {
         return await this.registrationCodeRepository.find({ where: { creatorId } });
     }
 
