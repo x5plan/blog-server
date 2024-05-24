@@ -59,7 +59,7 @@ export class UserService {
         return !!(await this.userRepository.count({ where: { email } }));
     }
 
-    public convertUserBaseDetail(user: UserEntity, currentUser?: UserEntity): UserBaseDetailDto {
+    public convertUserBaseDetail(user: UserEntity, currentUser?: UserEntity | null): UserBaseDetailDto {
         return {
             id: user.id,
             username: user.username,
@@ -69,16 +69,22 @@ export class UserService {
         };
     }
 
-    public convertUserDetail(user: UserEntity, currentUser?: UserEntity): UserDetailDto {
+    public convertUserDetail(user: UserEntity, currentUser?: UserEntity | null): UserDetailDto {
         return {
             ...this.convertUserBaseDetail(user, currentUser),
             bio: user.bio,
         };
     }
 
-    public convertPatchUserDetailDtoToUserEntity(dto: PatchUserDetailBodyDto): Partial<UserEntity> {
+    public convertPatchUserDetailDtoToUserEntity(
+        dto: PatchUserDetailBodyDto,
+        currentUser: UserEntity,
+    ): Partial<UserEntity> {
         return {
-            username: dto.username,
+            ...(currentUser.isAdmin && {
+                username: dto.username,
+                email: dto.email,
+            }),
             nickname: dto.nickname,
             bio: dto.bio,
         };

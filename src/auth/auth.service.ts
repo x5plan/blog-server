@@ -193,7 +193,7 @@ export class AuthService implements OnApplicationBootstrap {
 
     public async convertRegistrationCodeDetailAsync(
         registrationCodeEntity: RegistrationCodeEntity,
-        currentUser?: UserEntity,
+        currentUser?: UserEntity | null,
     ): Promise<RegistrationCodeDto> {
         const creatorUserEntity = await registrationCodeEntity.creatorPromise;
         const assignedUserEntity = registrationCodeEntity.assignedUserId

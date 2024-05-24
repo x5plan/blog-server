@@ -8,5 +8,5 @@ import type { IRequestWithSession } from "@/auth/auth.middleware";
  */
 export const CurrentUser = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
     const request: IRequestWithSession = ctx.switchToHttp().getRequest();
-    return request.session?.user;
+    return request.session?.user || null;
 });
