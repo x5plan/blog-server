@@ -14,3 +14,9 @@ export class DuplicateUsernameException extends AppHttpException {
         super(CE_ErrorCode.User_DuplicateUsername, "Duplicate username.", HttpStatus.BAD_REQUEST);
     }
 }
+
+export class DuplicateEmailException extends AppHttpException {
+    constructor() {
+        super(CE_ErrorCode.User_DuplicateEmail, "Duplicate email.", HttpStatus.BAD_REQUEST);
+    }
+}
