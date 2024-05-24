@@ -49,7 +49,7 @@ export class UserController {
 
     @ApiOperation({
         summary: "A HTTP DELETE request to delete a user.",
-        description: "Recaptcha required.",
+        description: "Auth required. Recaptcha required.",
     })
     @ApiBearerAuth()
     @Recaptcha()
@@ -99,7 +99,7 @@ export class UserController {
 
     @ApiOperation({
         summary: "A HTTP PATCH request to update a user detail.",
-        description: "Recaptcha required.",
+        description: "Auth required. Recaptcha required.",
     })
     @ApiBearerAuth()
     @Recaptcha()
