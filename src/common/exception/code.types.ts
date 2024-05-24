@@ -27,4 +27,6 @@ export const enum CE_ErrorCode {
     Auth_RegistrationCodeLimitExceeded = 1208,
 
     // User Module Error Code (1300 ~ 1399)
+    User_NoSuchUser = 1300,
+    User_DuplicateUsername = 1301,
 }

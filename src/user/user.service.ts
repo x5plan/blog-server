@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import type { PatchUserDetailBodyDto } from "./dto/patch-user-detail.dto";
 import type { UserBaseDetailDto, UserDetailDto } from "./dto/user.dto";
 import { UserEntity } from "./user.entity";
 
@@ -18,6 +19,15 @@ export class UserService {
 
     public async findUserByUsernameAsync(username: string) {
         return await this.userRepository.findOne({ where: { username } });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async deleteUserAsync(user: UserEntity) {
+        // TODO: Delete user
+    }
+
+    public async updateUserByIdAsync(id: number, data: Partial<UserEntity>) {
+        return await this.userRepository.update(id, data);
     }
 
     public async checkUsernameExistsAsync(username: string) {
@@ -42,6 +52,14 @@ export class UserService {
         return {
             ...this.convertUserBaseDetail(user, currentUser),
             bio: user.bio,
+        };
+    }
+
+    public convertPatchUserDetailDtoToUserEntity(dto: PatchUserDetailBodyDto): Partial<UserEntity> {
+        return {
+            username: dto.username,
+            nickname: dto.nickname,
+            bio: dto.bio,
         };
     }
 }
