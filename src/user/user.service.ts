@@ -21,6 +21,27 @@ export class UserService {
         return await this.userRepository.findOne({ where: { username } });
     }
 
+    public async findUserListAsync(
+        skipCount: number,
+        takeCount: number,
+    ): Promise<{
+        count: number;
+        users: UserEntity[];
+    }> {
+        const [users, count] = await this.userRepository.findAndCount({
+            order: {
+                id: "ASC",
+            },
+            skip: skipCount,
+            take: takeCount,
+        });
+
+        return {
+            count,
+            users,
+        };
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async deleteUserAsync(user: UserEntity) {
         // TODO: Delete user

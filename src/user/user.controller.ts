@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Recaptcha } from "@nestlab/google-recaptcha";
 
@@ -8,10 +8,12 @@ import { AuthRequiredException } from "@/common/exception/auth-required.exceptio
 import { PermissionDeniedException } from "@/common/exception/permission-denied.exception";
 import { hasOneOfKeys } from "@/common/utils/value-checkers";
 
+import type { GetUserListResponseDto } from "./dto";
 import {
     DeleteUserDetailParamDto,
     GetUserDetailParamDto,
     type GetUserDetailResponseDto,
+    GetUserListRequestQueryDto,
     PatchUserDetailBodyDto,
     PatchUserDetailParamDto,
     type PatchUserDetailResponseDto,
@@ -28,8 +30,21 @@ export class UserController {
         summary: "A HTTP GET request to get a user list.",
     })
     @Get("/list")
-    public async getUserListAsync() {
-        // TODO: Implement this method
+    public async getUserListAsync(
+        @CurrentUser() currentUser: UserEntity,
+        @Query() query: GetUserListRequestQueryDto,
+    ): Promise<GetUserListResponseDto> {
+        if (!currentUser) {
+            throw new AuthRequiredException();
+        }
+
+        const { skipCount, takeCount } = query;
+        const { count, users } = await this.userService.findUserListAsync(skipCount, takeCount);
+
+        return {
+            count,
+            users: users.map((user) => this.userService.convertUserDetail(user, currentUser)),
+        };
     }
 
     @ApiOperation({
