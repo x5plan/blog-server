@@ -8,7 +8,7 @@ import { AuthRequiredException } from "@/common/exception/auth-required.exceptio
 import { PermissionDeniedException } from "@/common/exception/permission-denied.exception";
 import { ConfigService } from "@/config/config.service";
 import { CE_MailTemplate, MailService } from "@/mail/mail.service";
-import { UserEntity } from "@/user/user.entity";
+import type { UserEntity } from "@/user/user.entity";
 import { UserService } from "@/user/user.service";
 
 import {
@@ -183,7 +183,9 @@ export class AuthController {
     @ApiBearerAuth()
     @Recaptcha()
     @Post("registrationCode")
-    public async postCreateRegistrationCodeAsync(@CurrentUser() currentUser: UserEntity): Promise<RegistrationCodeDto> {
+    public async postCreateRegistrationCodeAsync(
+        @CurrentUser() currentUser: UserEntity | null,
+    ): Promise<RegistrationCodeDto> {
         if (!currentUser) {
             throw new AuthRequiredException();
         }
@@ -200,7 +202,7 @@ export class AuthController {
     @ApiBearerAuth()
     @Delete("registrationCode/:code")
     public async deleteRegistrationCodeAsync(
-        @CurrentUser() currentUser: UserEntity,
+        @CurrentUser() currentUser: UserEntity | null,
         @Param() param: DeleteRegistrationCodeRequestParamsDto,
     ): Promise<CommonResultResponseDto> {
         if (!currentUser) {
@@ -234,7 +236,7 @@ export class AuthController {
     @Recaptcha()
     @Get("registrationCodeList")
     public async getRegistrationCodeListAsync(
-        @CurrentUser() currentUser: UserEntity,
+        @CurrentUser() currentUser: UserEntity | null,
         @Query() query: GetRegistrationCodeListRequestQueryDto,
     ): Promise<RegistrationCodeDto[]> {
         if (!currentUser) {
